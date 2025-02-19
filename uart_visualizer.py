@@ -22,9 +22,9 @@ represent the 5 bars.
 
 import time
 import threading
-import Tkinter
-import ttk
-from Tkinter import *
+import tkinter as Tkinter
+from tkinter import ttk
+from tkinter import *
 import serial
 
 
@@ -51,7 +51,7 @@ def connect():
     """
 
     version_ = button_var.get()
-    print version_
+    print(version_)
     global serial_object
     port = port_entry.get()
     baud = baud_entry.get()
@@ -63,12 +63,12 @@ def connect():
                 serial_object = serial.Serial('/dev/tty' + str(port), baud)
             
             except:
-                print "Cant Open Specified Port"
+                print("Cant Open Specified Port")
         elif version_ == 1:
             serial_object = serial.Serial('COM' + str(port), baud)
 
     except ValueError:
-        print "Enter Baud and Port"
+        print("Enter Baud and Port")
         return
 
     t1 = threading.Thread(target = get_data)
@@ -91,7 +91,7 @@ def get_data():
             serial_data = serial_object.readline().strip('\n').strip('\r')
             
             filter_data = serial_data.split(',')
-            print filter_data
+            print(filter_data)
         
         except TypeError:
             pass
@@ -149,18 +149,19 @@ def update_gui():
 def send():
     """This function is for sending data from the computer to the host controller.
     
-
-        The value entered in the the entry box is pushed to the UART. The data can be of any format, since
-        the data is always converted into ASCII, the receiving device has to convert the data into the required f
-        format.
+    The value entered in the the entry box is pushed to the UART. The data can be of any format, since
+    the data is always converted into ASCII, the receiving device has to convert the data into the required format.
     """
     send_data = data_entry.get()
     
     if not send_data:
-        print "Sent Nothing"
+        print("Sent Nothing")
+        return
     
-    serial_object.write(send_data)
-
+    try:
+        serial_object.write(send_data.encode('utf-8'))
+    except Exception as e:
+        print(f"Error sending data: {e}")
 
 
 def disconnect():
@@ -177,7 +178,7 @@ def disconnect():
         serial_object.close() 
     
     except AttributeError:
-        print "Closed without Using it -_-"
+        print("Closed without Using it -_-")
 
     gui.quit()
 
@@ -237,7 +238,6 @@ if __name__ == "__main__":
 
     #radio button
     button_var = IntVar()
-    radio_1 = Radiobutton(text = "Windows", variable = button_var, value = 1).place(x = 10, y = 315)
     radio_2 = Radiobutton(text = "Linux", variable = button_var, value = 2).place(x = 110, y = 315)
 
     #button
